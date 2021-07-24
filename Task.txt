@@ -1,0 +1,112 @@
+Subscribe to VRKSolutions 
+Reach out to me at "vrk4opportunities@gmail.com"
+
+Virtual Network 
+Subnet Masking
+Network Security Group 
+Private DNS Zones
+Load Balancer
+Application Gateway
+Virtual network gateway
+Point to Site Connection
+Vnet Peering 
+Port forwarding concepts
+Virtual machines
+
+1. Architecture & Task overview 
+2. Configure virtual networks and subnets
+3. Configure Virtual network gateway and Configure Point to site connection, provision mgmt server
+4. Provision Load Balancer and Application Gateway
+5. Configure VNet Peering among the VNets
+6. Provision Virtual Machines and Network Security Groups, 
+   Host Websites in Virtual Machines, 
+   Configure Load Balancer and Application Gateway - routing rules, backend targets 
+7. Configure Private DNS Zones
+8. Validate whether websites are working
+
+Configure virtual networks and subnets
+vnet-westus 
+ip address space - 102.10.0.0/16
+    mgmt-subnet - 102.10.0.0/24
+    vnetgw-subnet - 102.10.255.0/24
+
+vnet-centralindia
+ip address spcae - 102.11.0.0/16
+    webservers-subnet - 102.11.0.0/24
+    lb-subnet - 102.11.1.0/24
+
+vnet-westeurope
+ip address space - 102.12.0.0/16
+    webservers-subnet - 102.12.0.0/24
+    appgw-subnet - 102.12.1.0/24
+
+vnet-gw-westus
+    network - vnet-westus
+    GatewaySubnet - 102.10.255.0/24
+
+#Root Cert
+$cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
+-Subject "CN=P2SRootCert" -KeyExportPolicy Exportable `
+-HashAlgorithm sha256 -KeyLength 2048 `
+-CertStoreLocation "Cert:\CurrentUser\My" -KeyUsageProperty Sign -KeyUsage CertSign
+
+#Child Cert
+New-SelfSignedCertificate -Type Custom -DnsName P2SChildCert -KeySpec Signature `
+-Subject "CN=P2SChildCert" -KeyExportPolicy Exportable `
+-HashAlgorithm sha256 -KeyLength 2048 `
+-CertStoreLocation "Cert:\CurrentUser\My" `
+-Signer $cert -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2")
+
+mgmt01
+    mgmt-subnet - 102.10.0.0/24
+    private-ip - 102.10.0.4
+
+lb-centralindia
+    vnet-centralindia
+    subnet - lb-subnet
+    frontend 
+    backend 
+    health probe
+    load balancing rule
+    NAT rule 
+
+application gateway
+    frontend
+    backend pool
+    routing rule - listener, httpsetting
+
+Configured port forwarding using loadbalancer to db01 sever
+
+Global Vnet Peering
+Vnet-westus <--> Vnet-centralindia
+Vnet-westus <--> Vnet-westeurope
+Vnet-westeurope <--> Vnet-centralindia
+
+
+
+Private DNS Zone
+network link
+Vnet-westus
+Vnet-centralindia
+Vnet-westeurope 
+
+https://docs.microsoft.com/en-us/azure/application-gateway/create-multiple-sites-portal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
